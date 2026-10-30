@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>研修受講チェック表 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Old+Mincho:wght@700;900&display=swap">
+<style>
+/* Layout: a shift-sheet style grid. Staff down the side, the 12 sessions across the top with vertical headings, hanko 済 marks in the cells. */
+:root {
+  --paper: #f4f6f9;
+  --surface: #ffffff;
+  --ink: #1c2331;
+  --muted: #5b6475;
+  --faint: #a7afbd;
+  --line: #dde2ea;
+  --navy: #2a4572;
+  --navy-bg: #e7edf7;
+  --shu: #c23f2a;
+  --shu-bg: #fbece8;
+  --ochre: #94600a;
+  --ochre-bg: #fcf1dc;
+  --font-display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "BIZ UDPGothic", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #11141a; --surface: #191e27; --ink: #e5e9f0; --muted: #9ba4b4; --faint: #5a6373; --line: #2b3240;
+    --navy: #93b2e6; --navy-bg: #1c2940; --shu: #e66a52; --shu-bg: #33201c; --ochre: #e3a94e; --ochre-bg: #2d2413;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.wrap > * { min-width: 0; }
+button { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+header { display: grid; gap: 6px; }
+.org { font-size: 12.5px; color: var(--muted); letter-spacing: .04em; }
+.head-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(24px, 5vw, 32px); line-height: 1.25; margin: 0; text-wrap: balance; letter-spacing: .02em; }
+h2 { font-size: 15px; margin: 0; }
+.role { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: var(--surface); white-space: nowrap; }
+.role.admin { color: var(--navy); border-color: var(--navy); background: var(--navy-bg); }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* Summary */
+.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 12px; }
+.sum-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 24px; }
+.big { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.big .label { font-size: 13px; color: var(--muted); font-weight: 700; margin-right: 4px; }
+.big .num { font-family: var(--font-display); font-weight: 900; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+.big .of { font-size: 13px; color: var(--muted); }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; }
+.stats b { font-variant-numeric: tabular-nums; font-size: 16px; }
+.stats .warn b { color: var(--ochre); }
+.next { font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 2px; }
+.next b { color: var(--navy); }
+
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { font-size: 13.5px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.views { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.views button { font-size: 14px; padding: 7px 16px; border: 0; background: none; color: var(--muted); cursor: pointer; }
+.views button + button { border-left: 1px solid var(--line); }
+.views button[aria-pressed="true"] { background: var(--navy-bg); color: var(--navy); font-weight: 700; }
+select { font: inherit; font-size: 13.5px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+
+/* Grid */
+.grid-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; -webkit-overflow-scrolling: touch; }
+table.grid { border-collapse: separate; border-spacing: 0; font-size: 13px; }
+.grid th, .grid td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 0; }
+.grid tr > :last-child { border-right: 0; }
+.grid tbody tr:last-child > * { border-bottom: 0; }
+.grid .who { position: sticky; left: 0; z-index: 2; background: var(--surface); text-align: left; min-width: 128px; max-width: 168px; padding: 8px 10px; box-shadow: 1px 0 0 var(--line); }
+.grid thead .who { z-index: 3; vertical-align: bottom; font-size: 12px; color: var(--muted); font-weight: 700; }
+.grid thead th.col { width: 46px; min-width: 46px; vertical-align: top; padding: 6px 2px 6px; text-align: center; font-weight: 400; }
+.col .cn { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.1; display: block; }
+.col .cm { font-size: 10.5px; color: var(--muted); display: block; font-variant-numeric: tabular-nums; }
+.col .cl { writing-mode: vertical-rl; text-orientation: upright; font-size: 12px; line-height: 1.15; letter-spacing: .02em; height: 7.9em; margin: 4px auto 2px; display: block; color: var(--ink); white-space: nowrap; overflow: hidden; }
+.col .law { display: inline-block; font-size: 10px; font-weight: 700; color: var(--navy); border: 1px solid var(--navy); border-radius: 3px; padding: 0 3px; line-height: 1.5; }
+.col .law.none { visibility: hidden; }
+.col .cc { display: block; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); margin-top: 3px; }
+.col.soon .cn, .col.soon .cl { color: var(--faint); }
+.col.live { background: var(--navy-bg); }
+.col.live .cm { color: var(--navy); font-weight: 700; }
+.who .nm { font-weight: 700; font-size: 14px; display: block; overflow-wrap: anywhere; line-height: 1.35; }
+.who .pg { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 3px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.badge { font-size: 11px; font-weight: 700; padding: 0 6px; border-radius: 4px; border: 1px solid; white-space: nowrap; }
+.badge.ok { color: var(--navy); border-color: var(--navy); }
+.badge.ng { color: var(--ochre); border-color: var(--ochre); background: var(--ochre-bg); }
+
+td.c { width: 46px; height: 46px; text-align: center; vertical-align: middle; }
+td.c.live { background: var(--navy-bg); }
+td.c.miss { background: var(--ochre-bg); }
+.mark { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font-family: var(--font-display); font-weight: 900; font-size: 15px; line-height: 1; }
+.mark.done { color: var(--shu); border: 2.5px double var(--shu); background: var(--shu-bg); transform: rotate(-10deg); }
+.mark.na { color: var(--faint); font-family: var(--font-body); font-weight: 400; font-size: 14px; }
+.mark.miss { color: var(--ochre); font-size: 13px; }
+.mark.open { color: var(--navy); font-size: 13px; }
+.mark.blank { color: transparent; }
+.cellbtn { width: 100%; height: 46px; border: 0; background: none; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.cellbtn:hover { background: color-mix(in srgb, var(--navy-bg) 70%, transparent); }
+.cellbtn:hover .mark.blank { color: var(--faint); }
+.cellbtn[disabled] { opacity: .5; cursor: progress; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); align-items: center; }
+.legend .mark { width: 22px; height: 22px; font-size: 11px; margin-right: 4px; vertical-align: middle; }
+.legend .sw { display: inline-block; width: 16px; height: 16px; border-radius: 3px; margin-right: 4px; vertical-align: -3px; border: 1px solid var(--line); }
+.sw.miss { background: var(--ochre-bg); border-color: var(--ochre); }
+.sw.live { background: var(--navy-bg); border-color: var(--navy); }
+
+/* Training list */
+.list { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.no { font-family: var(--font-display); font-size: 26px; line-height: 1.1; color: var(--muted); font-weight: 700; }
+.body { display: grid; gap: 5px; min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 13px; color: var(--muted); }
+.period { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); }
+.pill { font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 4px; border: 1px solid var(--line); white-space: nowrap; color: var(--muted); }
+.pill.live { color: var(--navy); border-color: var(--navy); background: var(--navy-bg); }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 11.5px; padding: 0 7px; border-radius: 3px; background: var(--paper); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.tag.legal { color: var(--navy); border-color: var(--navy); }
+.title { font-size: 16px; font-weight: 700; line-height: 1.45; margin: 0; overflow-wrap: anywhere; }
+.sub, .lect { font-size: 13px; color: var(--muted); margin: 0; overflow-wrap: anywhere; }
+.lect strong { color: var(--ink); }
+.who-line { font-size: 13px; border-top: 1px dashed var(--line); padding-top: 6px; margin-top: 2px; display: grid; gap: 2px; }
+.who-line .done-n { color: var(--shu); font-weight: 700; font-variant-numeric: tabular-nums; }
+.who-line .miss-names { color: var(--ochre); }
+.who-line .wait-names { color: var(--muted); }
+
+.empty-note { text-align: center; color: var(--muted); padding: 28px 16px; font-size: 14px; background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; }
+.status { font-size: 13px; margin: 0; color: var(--muted); }
+.status.err { color: var(--ochre); font-weight: 700; }
+.status:empty { display: none; }
+
+/* Admin */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; }
+.panel form { display: flex; flex-wrap: wrap; gap: 8px; }
+.panel input { font: inherit; font-size: 16px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); min-width: 0; flex: 1 1 180px; }
+.btn { font-size: 14px; font-weight: 700; padding: 8px 16px; border-radius: 6px; border: 1px solid var(--navy); background: var(--navy); color: var(--surface); cursor: pointer; white-space: nowrap; }
+.btn.ghost { background: none; color: var(--navy); }
+.btn.small { font-size: 12.5px; padding: 4px 10px; font-weight: 400; }
+.btn.danger { border-color: var(--shu); color: var(--shu); background: none; }
+.btn.danger.sure { background: var(--shu); color: var(--surface); }
+.btn[disabled] { opacity: .5; cursor: default; }
+.staff-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.staff-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 0; border-top: 1px solid var(--line); }
+.staff-list .sn { flex: 1 1 140px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.staff-list input { flex: 1 1 140px; }
+.linkish { font-size: 13px; background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; }
+
+footer { border-top: 1px solid var(--line); padding-top: 14px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+footer .tel { user-select: all; font-variant-numeric: tabular-nums; color: var(--ink); }
+.foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; }
+.foot-row span { display: flex; gap: 14px; }
+
+@media (max-width: 520px) {
+  .big .num { font-size: 34px; }
+  .grid .who { min-width: 108px; max-width: 128px; padding: 8px; }
+  .row { padding: 12px; gap: 10px; }
+  .no { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  .controls, .panel, .status, .foot-row button, .legend .admin-only { display: none !important; }
+  .grid-wrap { overflow: visible; border: 0; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="org">公益財団法人 介護労働安定センター 栃木支部 ／ 配信研修（各回90分）</div>
+    <div class="head-row">
+      <h1>研修受講チェック表 2026</h1>
+      <span class="role" id="role">閲覧のみ</span>
+    </div>
+    <p class="hint" id="hint">受講記録を読み込んでいます。</p>
+  </header>
+
+  <section class="summary" aria-label="進捗のまとめ">
+    <div class="sum-top">
+      <div class="big"><span class="label">配信済み研修の受講率</span><span class="num" id="rate">–</span><span class="of" id="rateOf"></span></div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="next" id="next"></div>
+  </section>
+
+  <section class="panel" id="loginBox" hidden aria-label="管理者ログイン">
+    <div><h2>管理者ログイン</h2><span class="hint">ログインすると、職員の登録と受講チェックができます。この端末では30日間ログインが続きます。</span></div>
+    <form id="loginForm">
+      <input type="password" id="pw" name="password" autocomplete="current-password" placeholder="管理者パスワード" required>
+      <button class="btn" type="submit" id="loginBtn">ログイン</button>
+      <button class="btn ghost" type="button" id="loginCancel">閉じる</button>
+    </form>
+    <p class="status" id="loginMsg" role="status" aria-live="polite"></p>
+  </section>
+
+  <div class="controls">
+    <div class="views" role="group" aria-label="表示の切り替え">
+      <button id="v-grid" data-v="grid" aria-pressed="true">職員別の受講状況</button>
+      <button id="v-list" data-v="list" aria-pressed="false">研修ごと</button>
+    </div>
+    <div class="group">
+      <div class="group" role="group" aria-label="研修の絞り込み">
+        <button class="chip" id="f-all" data-f="all" aria-pressed="true">全12回</button>
+        <button class="chip" id="f-held" data-f="held" aria-pressed="false">配信済み</button>
+        <button class="chip" id="f-legal" data-f="legal" aria-pressed="false">法定研修</button>
+      </div>
+      <label class="hint" for="sort" id="sortWrap">並び順
+        <select id="sort">
+          <option value="reg">登録順</option>
+          <option value="miss">未受講が多い順</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+
+  <section id="gridView" aria-label="職員別の受講状況">
+    <div class="grid-wrap" id="gridWrap"></div>
+    <div class="legend" style="margin-top:10px">
+      <span><span class="mark done">済</span>受講済み</span>
+      <span><span class="sw miss"></span>配信終了・未受講</span>
+      <span><span class="sw live"></span>配信中</span>
+      <span><span class="mark na">—</span>対象外</span>
+      <span class="admin-only" id="tapHint" hidden>マスをタップするたびに「済 → 対象外 → 空欄」と切り替わります</span>
+    </div>
+  </section>
+
+  <section id="listView" hidden aria-label="研修ごとの受講状況">
+    <ol class="list" id="list"></ol>
+  </section>
+
+  <section class="panel" id="staffPanel" hidden aria-label="職員の管理">
+    <h2>職員の管理</h2>
+    <form id="addForm">
+      <input id="newName" name="newName" maxlength="40" placeholder="職員の名前（例：山田 花子）" required>
+      <button class="btn" type="submit" id="addBtn">追加</button>
+    </form>
+    <ul class="staff-list" id="staffList"></ul>
+  </section>
+
+  <footer>
+    <div>お問合せ・お申込：公益財団法人 介護労働安定センター 栃木支部</div>
+    <div>TEL <span class="tel">028-643-6445</span>　FAX <span class="tel">028-643-6448</span></div>
+    <div class="foot-row">
+      <span id="updated"></span>
+      <span>
+        <button class="linkish" id="openLogin" type="button">管理者ログイン</button>
+        <button class="linkish" id="logout" type="button" hidden>ログアウト</button>
+      </span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const SUPABASE_URL = "https://drulwfyxfampqdkwboed.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_1fr-lXoK0pTamq3brnZrKw_RaxMjP6V";
+  const TOKEN_KEY = "kenshu-admin-token";
+
+  const T = [
+    { n: 1, s: "2026-05-15", e: "2026-05-28", short: "カスハラ対策", tags: [], title: "管理職が行うカスタマーハラスメント対策", sub: "～そのとき管理職は何をすべきか～", org: "株式会社Next Care Consulting 代表取締役社長", name: "柳沼亮一 氏" },
+    { n: 2, s: "2026-06-12", e: "2026-06-25", short: "感染症BCP", tags: ["法定研修", "情報公表対象研修"], title: "感染症の予防、まん延防止（食中毒）とBCP", sub: "～感染させないための日々の対策のポイント～", org: "株式会社アポロ・サンズHD 看護部部長", name: "木本明恵 氏" },
+    { n: 3, s: "2026-07-14", e: "2026-07-27", short: "倫理・コンプラ", tags: ["情報公表対象研修"], title: "介護現場の「コンプライアンス」と「倫理」の重要性", sub: "～それぞれの原則を理解し、基本を身につけよう～", org: "ツツイグループ 顧問兼コンプライアンス室 室長", name: "松川竜也 氏" },
+    { n: 4, s: "2026-08-18", e: "2026-08-31", short: "災害BCP", tags: ["法定研修", "情報公表対象研修"], title: "介護事業所の災害時のBCP", sub: "～個々の対応と組織としての対応・対策のポイント～", org: "跡見学園女子大学 観光コミュニティ学部 まちづくり学科 教授", name: "鍵屋一 氏" },
+    { n: 5, s: "2026-09-11", e: "2026-09-24", short: "リスク管理", tags: [], title: "風通しの良い職場が可能にする組織のリスクマネジメント", sub: "～予防と対処とプラスアルファを円滑に進めるために～", org: "株式会社エクセレントケアシステム 執行役員 人材開発部部長", name: "柴垣竹生 氏" },
+    { n: 6, s: "2026-09-17", e: "2026-09-30", short: "移動・移乗", tags: ["資質向上研修"], title: "介護技術向上研修", sub: "～利用者と私たちを守るための移動・移乗～", org: "社会福祉法人エンゼル福祉会 渋谷区かんなみの杜・渋谷", name: "中村和人 氏" },
+    { n: 7, s: "2026-10-14", e: "2026-10-27", short: "認知症ケア", tags: ["情報公表対象研修"], title: "認知症ケアで大切なこと", sub: "～認知症を理解し、ケアの質の向上を～", org: "在宅かいご専門けあの相談所 Re-think 代表", name: "田島利子 氏" },
+    { n: 8, s: "2026-11-12", e: "2026-11-25", short: "虐待防止", tags: ["法定研修", "情報公表対象研修"], title: "虐待の防止の徹底", sub: "～未然に防ぎ組織で取り組もう～", org: "社会福祉法人小田原福祉会理事 特別養護老人ホーム潤生園 施設長", name: "井口健一郎 氏" },
+    { n: 9, s: "2026-12-11", e: "2026-12-24", short: "外国人職員", tags: [], title: "外国人の職員の定着に繋げる職場づくり", sub: "～職場内のコミュニケーションによるよりよい介護空間づくり～", org: "小濱介護経営事務所 代表", name: "小濱道博 氏" },
+    { n: 10, s: "2027-01-14", e: "2027-01-27", short: "身体拘束", tags: ["法定研修", "情報公表対象研修"], title: "身体拘束の適正化", sub: "～ケアで考える、対応と再発防止のポイント～", org: "社会福祉法人みどりの風 法人本部副本部長", name: "武藤とみ子 氏" },
+    { n: 11, s: "2027-02-12", e: "2027-02-25", short: "サ責の役割", tags: [], title: "訪問介護事業所の職場定着を進めるサービス提供責任者の役割", sub: "", org: "株式会社ケアメイト 代表取締役", name: "板井佑介 氏" },
+    { n: 12, s: "2027-03-11", e: "2027-03-24", short: "事故防止", tags: ["法定研修", "情報公表対象研修"], title: "介護事故の防止と発生時の対応", sub: "～ヒヤリ・ハットとチーム連携～", org: "株式会社Next Care Consulting 代表取締役社長", name: "柳沼亮一 氏" },
+  ];
+  const CIRC = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫";
+  const WD = "日月火水木金土";
+  const DAY = 86400000;
+
+  const parse = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); };
+  const md = (d) => `${d.getMonth() + 1}/${d.getDate()}（${WD[d.getDay()]}）`;
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  let today;
+  function computePhases() {
+    const d = new Date();
+    today = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    T.forEach((t) => {
+      t.sd = parse(t.s); t.ed = parse(t.e);
+      t.phase = today < t.sd ? "soon" : today > t.ed ? "ended" : "live";
+      t.legal = t.tags.includes("法定研修");
+    });
+  }
+  computePhases();
+
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} },
+  };
+
+  const state = {
+    staff: [], att: {}, loaded: false, loadError: false, lastLoad: null,
+    token: store.get(TOKEN_KEY), isAdmin: false,
+    pending: new Set(), busy: false,
+    view: store.get("kenshu-view2") || "grid",
+    filter: store.get("kenshu-filter2") || "all",
+    sort: store.get("kenshu-sort") || "reg",
+    editing: null, confirmDel: null,
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const key = (sid, n) => sid + ":" + n;
+  const statusOf = (sid, n) => (state.att[key(sid, n)] || {}).status || "";
+
+  async function api(path, opts = {}) {
+    const res = await fetch(SUPABASE_URL + path, {
+      ...opts,
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json", ...(opts.headers || {}) },
+    });
+    const text = await res.text();
+    let body = null; try { body = text ? JSON.parse(text) : null; } catch (e) {}
+    if (!res.ok) { const err = new Error((body && body.message) || res.statusText); err.status = res.status; throw err; }
+    return body;
+  }
+  const rpc = (fn, args) => api("/rest/v1/rpc/" + fn, { method: "POST", body: JSON.stringify(args) });
+
+  function setStatus(msg, err) { const s = $("status"); s.textContent = msg || ""; s.className = "status" + (err ? " err" : ""); }
+
+  function staffStats(sid) {
+    let done = 0, na = 0, miss = 0, missList = [];
+    T.forEach((t) => {
+      const st = statusOf(sid, t.n);
+      if (st === "done") done++;
+      else if (st === "na") na++;
+      else if (t.phase === "ended") { miss++; missList.push(t.n); }
+    });
+    return { done, target: 12 - na, miss, missList };
+  }
+  function colStats(n) {
+    let done = 0, na = 0;
+    state.staff.forEach((s) => { const st = statusOf(s.id, n); if (st === "done") done++; else if (st === "na") na++; });
+    return { done, target: state.staff.length - na };
+  }
+
+  function visibleTrainings() {
+    return T.filter((t) => state.filter === "held" ? t.phase !== "soon" : state.filter === "legal" ? t.legal : true);
+  }
+  function sortedStaff() {
+    const arr = state.staff.slice();
+    if (state.sort === "miss") {
+      const m = new Map(arr.map((s) => [s.id, staffStats(s.id)]));
+      arr.sort((a, b) => m.get(b.id).miss - m.get(a.id).miss || m.get(a.id).done - m.get(b.id).done);
+    }
+    return arr;
+  }
+
+  function markHTML(st, t) {
+    if (st === "done") return `<span class="mark done">済</span>`;
+    if (st === "na") return `<span class="mark na">—</span>`;
+    if (t.phase === "ended") return `<span class="mark miss">未</span>`;
+    if (t.phase === "live") return `<span class="mark open">未</span>`;
+    return `<span class="mark blank">未</span>`;
+  }
+
+  function renderGrid() {
+    const wrap = $("gridWrap");
+    if (!state.loaded) { wrap.innerHTML = `<div class="empty-note">受講記録を読み込んでいます…</div>`; return; }
+    if (!state.staff.length) {
+      wrap.innerHTML = `<div class="empty-note">まだ職員が登録されていません。<br>${state.isAdmin ? "下の「職員の管理」から名前を追加してください。" : "管理者がページ下の「管理者ログイン」から職員を登録すると、ここに一覧が表示されます。"}</div>`;
+      return;
+    }
+    const cols = visibleTrainings();
+    const head = `<tr><th class="who" scope="col">職員 ／ 受講数</th>${cols.map((t) => {
+      const c = colStats(t.n);
+      return `<th class="col ${t.phase}" scope="col" title="${esc(t.title)}">
+        <span class="cn">${CIRC[t.n - 1]}</span>
+        <span class="cm">${t.phase === "live" ? "配信中" : (t.sd.getMonth() + 1) + "月"}</span>
+        <span class="cl">${esc(t.short)}</span>
+        <span class="law${t.legal ? "" : " none"}">法定</span>
+        <span class="cc">${c.done}/${c.target}</span>
+      </th>`;
+    }).join("")}</tr>`;
+    const body = sortedStaff().map((s) => {
+      const st = staffStats(s.id);
+      const badge = st.miss ? `<span class="badge ng">未受講 ${st.miss}</span>` : `<span class="badge ok">遅れなし</span>`;
+      const cells = cols.map((t) => {
+        const v = statusOf(s.id, t.n);
+        const cls = v ? "" : t.phase === "ended" ? "miss" : t.phase === "live" ? "live" : "";
+        const label = `${s.name}さん ${CIRC[t.n - 1]}${t.short}：${v === "done" ? "受講済み" : v === "na" ? "対象外" : "未受講"}`;
+        const inner = markHTML(v, t);
+        if (!state.isAdmin) return `<td class="c ${cls}" title="${esc(label)}"><span class="sr" hidden>${esc(label)}</span>${inner}</td>`;
+        const k = key(s.id, t.n);
+        return `<td class="c ${cls}"><button class="cellbtn" data-sid="${s.id}" data-n="${t.n}" ${state.pending.has(k) ? "disabled" : ""} aria-label="${esc(label)}（タップで切り替え）">${inner}</button></td>`;
+      }).join("");
+      return `<tr><th class="who" scope="row"><span class="nm">${esc(s.name)}</span><span class="pg">済 ${st.done}/${st.target} ${badge}</span></th>${cells}</tr>`;
+    }).join("");
+    wrap.innerHTML = `<table class="grid"><thead>${head}</thead><tbody>${body}</tbody></table>`;
+  }
+
+  function renderList() {
+    const known = state.loaded;
+    $("list").innerHTML = visibleTrainings().map((t) => {
+      const tags = t.tags.map((g) => `<span class="tag${g === "法定研修" ? " legal" : ""}">${g}</span>`).join("");
+      const pill = t.phase === "live" ? `<span class="pill live">配信中・あと${Math.round((t.ed - today) / DAY)}日</span>` : t.phase === "ended" ? `<span class="pill">配信終了</span>` : `<span class="pill">配信予定</span>`;
+      let who = "";
+      if (known && state.staff.length) {
+        const c = colStats(t.n);
+        const notYet = state.staff.filter((s) => !statusOf(s.id, t.n)).map((s) => esc(s.name));
+        who = `<div class="who-line"><span>受講済み <span class="done-n">${c.done} / ${c.target}名</span></span>`;
+        if (notYet.length && t.phase !== "soon") who += `<span class="${t.phase === "ended" ? "miss-names" : "wait-names"}">${t.phase === "ended" ? "未受講" : "まだの人"}：${notYet.join("、")}</span>`;
+        if (!notYet.length && c.target > 0) who += `<span>全員受講済み</span>`;
+        who += `</div>`;
+      }
+      return `<li class="row">
+        <div class="no" aria-hidden="true">${CIRC[t.n - 1]}</div>
+        <div class="body">
+          <div class="meta"><span class="period">${md(t.sd)} 〜 ${md(t.ed)}</span>${pill}</div>
+          ${tags ? `<div class="tags">${tags}</div>` : ""}
+          <p class="title">${t.title}</p>
+          ${t.sub ? `<p class="sub">${t.sub}</p>` : ""}
+          <p class="lect">講師：${t.org} <strong>${t.name}</strong></p>
+          ${who}
+        </div>
+      </li>`;
+    }).join("");
+  }
+
+  function renderStaffPanel() {
+    $("staffPanel").hidden = !state.isAdmin;
+    if (!state.isAdmin) return;
+    const list = state.staff;
+    $("staffList").innerHTML = list.length ? list.map((s, i) => {
+      if (state.editing === s.id) {
+        return `<li><input id="edit-${s.id}" value="${esc(s.name)}" maxlength="40" aria-label="新しい名前">
+          <button class="btn small" data-act="save" data-id="${s.id}">保存</button>
+          <button class="btn small ghost" data-act="cancel">やめる</button></li>`;
+      }
+      const sure = state.confirmDel === s.id;
+      return `<li><span class="sn">${esc(s.name)}</span>
+        <button class="btn small ghost" data-act="up" data-id="${s.id}" ${i === 0 ? "disabled" : ""} aria-label="${esc(s.name)}を上へ">↑</button>
+        <button class="btn small ghost" data-act="down" data-id="${s.id}" ${i === list.length - 1 ? "disabled" : ""} aria-label="${esc(s.name)}を下へ">↓</button>
+        <button class="btn small ghost" data-act="edit" data-id="${s.id}">名前変更</button>
+        <button class="btn small danger${sure ? " sure" : ""}" data-act="del" data-id="${s.id}">${sure ? "受講記録ごと削除する" : "削除"}</button></li>`;
+    }).join("") : `<li><span class="hint">まだ登録がありません。上の欄に名前を入れて「追加」を押してください。</span></li>`;
+  }
+
+  function render() {
+    const known = state.loaded;
+    $("role").textContent = state.isAdmin ? "管理者：編集できます" : "閲覧のみ";
+    $("role").className = "role" + (state.isAdmin ? " admin" : "");
+    $("hint").textContent = state.loadError && !known ? "受講記録を読み込めませんでした。通信状況を確認して、ページを開き直してください。"
+      : !known ? "受講記録を読み込んでいます。"
+      : state.isAdmin ? "表のマスをタップして受講済みを記録します。職員の追加はページ下の「職員の管理」から。"
+      : "職員ごとの受講状況です。黄色のマスは、配信が終わっているのにまだ受講していない研修です。";
+    $("openLogin").hidden = state.isAdmin;
+    $("logout").hidden = !state.isAdmin;
+    $("tapHint").hidden = !state.isAdmin;
+    $("updated").textContent = state.lastLoad ? `最終更新 ${state.lastLoad.getHours()}:${String(state.lastLoad.getMinutes()).padStart(2, "0")}` : "";
+
+    // summary
+    const held = T.filter((t) => t.phase === "ended");
+    let num = 0, den = 0, missTotal = 0, legalMiss = 0, peopleMiss = 0;
+    if (known) {
+      state.staff.forEach((s) => {
+        let m = 0;
+        held.forEach((t) => {
+          const st = statusOf(s.id, t.n);
+          if (st === "na") return;
+          den++;
+          if (st === "done") num++; else { m++; if (t.legal) legalMiss++; }
+        });
+        missTotal += m; if (m) peopleMiss++;
+      });
+    }
+    $("rate").textContent = known && den ? Math.round((num / den) * 100) + "%" : "–";
+    $("rateOf").textContent = known && den ? `（${num} / ${den}件・配信終了の${held.length}回分）` : "";
+    $("stats").innerHTML = known ? `
+      <span>職員 <b>${state.staff.length}</b>名</span>
+      <span class="warn">未受講が残っている人 <b>${peopleMiss}</b>名</span>
+      <span class="warn">法定研修の未受講 <b>${legalMiss}</b>件</span>` : "";
+    const live = T.filter((t) => t.phase === "live");
+    const nextUp = T.find((t) => t.phase === "soon");
+    let nx = live.map((t) => `<div>配信中：<b>${CIRC[t.n - 1]} ${t.title}</b>（${md(t.ed)}まで・あと${Math.round((t.ed - today) / DAY)}日）</div>`).join("");
+    if (nextUp) nx += `<div>次の研修：<b>${CIRC[nextUp.n - 1]} ${nextUp.title}</b>（${md(nextUp.sd)}配信開始・あと${Math.round((nextUp.sd - today) / DAY)}日）</div>`;
+    $("next").innerHTML = nx || "<div>今年度の配信はすべて終了しました。</div>";
+
+    // controls
+    document.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.f === state.filter)));
+    document.querySelectorAll(".views button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === state.view)));
+    $("sort").value = state.sort;
+    $("sortWrap").hidden = state.view !== "grid";
+    $("gridView").hidden = state.view !== "grid";
+    $("listView").hidden = state.view !== "list";
+
+    if (state.view === "grid") renderGrid(); else renderList();
+    renderStaffPanel();
+  }
+
+  async function load() {
+    try {
+      const [staff, att] = await Promise.all([
+        api("/rest/v1/kenshu_staff?select=id,name,sort_order&order=sort_order,created_at"),
+        api("/rest/v1/kenshu_attendance?select=staff_id,n,status,done_at&limit=5000"),
+      ]);
+      const m = {};
+      (att || []).forEach((r) => { m[key(r.staff_id, r.n)] = r; });
+      state.pending.forEach((k) => { if (k in state.att) m[k] = state.att[k]; else delete m[k]; });
+      state.staff = staff || []; state.att = m;
+      state.loaded = true; state.loadError = false; state.lastLoad = new Date();
+    } catch (e) {
+      state.loadError = true;
+      if (state.loaded) setStatus("最新の状況を取得できませんでした。少し待つと自動で再読み込みします。", true);
+    }
+    render();
+  }
+
+  function onAdminError(e, fallback) {
+    if (/not_admin/.test(e.message)) {
+      state.isAdmin = false; state.token = null; store.set(TOKEN_KEY, null);
+      setStatus("ログインの有効期限が切れました。もう一度管理者ログインしてください。", true);
+    } else setStatus(fallback, true);
+  }
+
+  async function checkAdmin() {
+    if (!state.token) return;
+    try {
+      state.isAdmin = (await rpc("kenshu_admin_check", { p_token: state.token })) === true;
+      if (!state.isAdmin) { state.token = null; store.set(TOKEN_KEY, null); }
+    } catch (e) { state.isAdmin = false; }
+    render();
+  }
+
+  const NEXT = { "": "done", done: "na", na: "" };
+  async function cycle(sid, n) {
+    const k = key(sid, n);
+    if (!state.isAdmin || state.pending.has(k)) return;
+    const prev = state.att[k];
+    const nextSt = NEXT[(prev && prev.status) || ""];
+    state.pending.add(k);
+    const att = { ...state.att };
+    if (nextSt) att[k] = { staff_id: sid, n, status: nextSt }; else delete att[k];
+    state.att = att;
+    render();
+    try {
+      await rpc("kenshu_set_attendance", { p_token: state.token, p_staff: sid, p_n: n, p_status: nextSt || null });
+      setStatus("");
+    } catch (e) {
+      const back = { ...state.att };
+      if (prev) back[k] = prev; else delete back[k];
+      state.att = back;
+      onAdminError(e, "保存できませんでした。通信状況を確認して、もう一度タップしてください。");
+    } finally { state.pending.delete(k); render(); }
+  }
+
+  async function staffAction(fn, args, okMsg) {
+    if (state.busy) return;
+    state.busy = true;
+    try { await rpc(fn, { p_token: state.token, ...args }); if (okMsg) setStatus(okMsg); await load(); }
+    catch (e) { onAdminError(e, "変更できませんでした。通信状況を確認して、もう一度お試しください。"); render(); }
+    finally { state.busy = false; }
+  }
+
+  // events
+  document.addEventListener("click", (ev) => {
+    const chip = ev.target.closest(".chip");
+    if (chip) { state.filter = chip.dataset.f; store.set("kenshu-filter2", state.filter); render(); return; }
+    const v = ev.target.closest(".views button");
+    if (v) { state.view = v.dataset.v; store.set("kenshu-view2", state.view); render(); return; }
+    const cell = ev.target.closest(".cellbtn");
+    if (cell) { cycle(cell.dataset.sid, Number(cell.dataset.n)); return; }
+    const act = ev.target.closest("[data-act]");
+    if (act) {
+      const id = act.dataset.id, s = state.staff.find((x) => x.id === id);
+      const a = act.dataset.act;
+      if (a !== "del") state.confirmDel = null;
+      if (a === "up" || a === "down") staffAction("kenshu_staff_move", { p_id: id, p_dir: a === "up" ? -1 : 1 });
+      else if (a === "edit") { state.editing = id; render(); const el = $("edit-" + id); if (el) el.focus(); }
+      else if (a === "cancel") { state.editing = null; render(); }
+      else if (a === "save") {
+        const name = ($("edit-" + id).value || "").trim();
+        if (!name) return;
+        state.editing = null;
+        staffAction("kenshu_staff_rename", { p_id: id, p_name: name }, "名前を変更しました。");
+      } else if (a === "del") {
+        if (state.confirmDel !== id) { state.confirmDel = id; render(); return; }
+        state.confirmDel = null;
+        staffAction("kenshu_staff_remove", { p_id: id }, `${s ? s.name : "職員"}さんを名簿から削除しました。`);
+      }
+      return;
+    }
+    if (state.confirmDel) { state.confirmDel = null; renderStaffPanel(); }
+  });
+  $("sort").addEventListener("change", () => { state.sort = $("sort").value; store.set("kenshu-sort", state.sort); render(); });
+
+  $("addForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const name = $("newName").value.trim();
+    if (!name) return;
+    $("addBtn").disabled = true;
+    await staffAction("kenshu_staff_add", { p_name: name }, `${name}さんを追加しました。`);
+    $("newName").value = ""; $("addBtn").disabled = false; $("newName").focus();
+  });
+
+  $("openLogin").addEventListener("click", () => { $("loginBox").hidden = false; $("pw").focus(); $("loginBox").scrollIntoView({ block: "center" }); });
+  $("loginCancel").addEventListener("click", () => { $("loginBox").hidden = true; $("loginMsg").textContent = ""; });
+  $("loginForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const pw = $("pw").value;
+    if (!pw) return;
+    const msg = $("loginMsg");
+    $("loginBtn").disabled = true; msg.className = "status"; msg.textContent = "確認しています…";
+    try {
+      const token = await rpc("kenshu_admin_login", { p_password: pw });
+      if (!token) { msg.className = "status err"; msg.textContent = "パスワードが違います。"; return; }
+      state.token = token; store.set(TOKEN_KEY, token); state.isAdmin = true;
+      $("pw").value = ""; msg.textContent = ""; $("loginBox").hidden = true;
+      setStatus("管理者としてログインしました。");
+      render();
+    } catch (e) {
+      msg.className = "status err";
+      msg.textContent = /too_many/.test(e.message) ? "失敗が続いたため、15分ほど待ってからもう一度お試しください。" : "ログインできませんでした。通信状況を確認してください。";
+    } finally { $("loginBtn").disabled = false; }
+  });
+  $("logout").addEventListener("click", async () => {
+    const tk = state.token;
+    state.token = null; state.isAdmin = false; state.editing = null; store.set(TOKEN_KEY, null);
+    setStatus("ログアウトしました。");
+    render();
+    try { await rpc("kenshu_admin_logout", { p_token: tk }); } catch (e) {}
+  });
+
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { computePhases(); load(); } });
+  setInterval(() => { if (!document.hidden && !state.pending.size && !state.busy && !state.editing) load(); }, 60000);
+
+  render();
+  load();
+  checkAdmin();
+})();
+</script>
+</body>
+</html>
