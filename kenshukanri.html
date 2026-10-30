@@ -200,7 +200,6 @@ footer .tel { user-select: all; font-variant-numeric: tabular-nums; color: var(-
   <section class="summary" aria-label="進捗のまとめ">
     <div class="sum-top">
       <div class="big"><span class="label">配信済み研修の受講率</span><span class="num" id="rate">–</span><span class="of" id="rateOf"></span></div>
-      <div class="stats" id="stats"></div>
     </div>
     <div class="next" id="next"></div>
   </section>
@@ -262,8 +261,6 @@ footer .tel { user-select: all; font-variant-numeric: tabular-nums; color: var(-
   </section>
 
   <footer>
-    <div>お問合せ・お申込：公益財団法人 介護労働安定センター 栃木支部</div>
-    <div>TEL <span class="tel">028-643-6445</span>　FAX <span class="tel">028-643-6448</span></div>
     <div class="foot-row">
       <span id="updated"></span>
       <span>
@@ -469,9 +466,8 @@ footer .tel { user-select: all; font-variant-numeric: tabular-nums; color: var(-
     $("role").textContent = state.isAdmin ? "管理者：編集できます" : "閲覧のみ";
     $("role").className = "role" + (state.isAdmin ? " admin" : "");
     $("hint").textContent = state.loadError && !known ? "受講記録を読み込めませんでした。通信状況を確認して、ページを開き直してください。"
-      : !known ? "受講記録を読み込んでいます。"
-      : state.isAdmin ? "表のマスをタップして受講済みを記録します。職員の追加はページ下の「職員の管理」から。"
-      : "職員ごとの受講状況です。黄色のマスは、配信が終わっているのにまだ受講していない研修です。";
+      : !known ? "受講記録を読み込んでいます。" : "";
+    $("hint").hidden = !$("hint").textContent;
     $("openLogin").hidden = state.isAdmin;
     $("logout").hidden = !state.isAdmin;
     $("tapHint").hidden = !state.isAdmin;
@@ -494,10 +490,6 @@ footer .tel { user-select: all; font-variant-numeric: tabular-nums; color: var(-
     }
     $("rate").textContent = known && den ? Math.round((num / den) * 100) + "%" : "–";
     $("rateOf").textContent = known && den ? `（${num} / ${den}件・配信終了の${held.length}回分）` : "";
-    $("stats").innerHTML = known ? `
-      <span>職員 <b>${state.staff.length}</b>名</span>
-      <span class="warn">未受講が残っている人 <b>${peopleMiss}</b>名</span>
-      <span class="warn">法定研修の未受講 <b>${legalMiss}</b>件</span>` : "";
     const live = T.filter((t) => t.phase === "live");
     const nextUp = T.find((t) => t.phase === "soon");
     let nx = live.map((t) => `<div>配信中：<b>${CIRC[t.n - 1]} ${t.title}</b>（${md(t.ed)}まで・あと${Math.round((t.ed - today) / DAY)}日）</div>`).join("");
