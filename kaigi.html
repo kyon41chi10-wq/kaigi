@@ -194,12 +194,12 @@ textarea.field{resize:vertical;min-height:44px}
 <main id="board">
   <div class="wrap">
     <section class="invite">
-      <h2 id="inviteTitle">京町亭会議で<br>話したいこと、<br>気軽に書いてください</h2>
-      <p>いただいたご意見は、京町亭会議の議事に反映させていただきます。</p>
-      <button class="bigwrite" id="openWrite"><svg><use href="#i-pen"/></svg>意見を書く</button>
+      <h2 id="inviteTitle">京町亭会議への<br>意見・質問・要望を、<br>気軽に書いてください</h2>
+      <p>いただいたご意見・ご質問・ご要望は、京町亭会議の議事に反映させていただきます。</p>
+      <button class="bigwrite" id="openWrite"><svg><use href="#i-pen"/></svg>意見・質問・要望を書く</button>
     </section>
 
-    <button class="showall" id="toggleFeed" aria-expanded="false" aria-controls="feedArea"><span id="toggleLabel">みんなの意見を見る</span><span class="n" id="feedCount">0件</span><span class="chev" aria-hidden="true">▾</span></button>
+    <button class="showall" id="toggleFeed" aria-expanded="false" aria-controls="feedArea"><span id="toggleLabel">みんなの意見・質問・要望を見る</span><span class="n" id="feedCount">0件</span><span class="chev" aria-hidden="true">▾</span></button>
     <div id="feedArea" hidden>
       <nav class="filters" id="filters" aria-label="宛先で絞り込み"></nav>
       <div class="feed" id="feed"></div>
@@ -232,7 +232,7 @@ textarea.field{resize:vertical;min-height:44px}
 <main id="minutesView" hidden>
   <div class="wrap mv">
     <div><button class="back" id="backBoard">‹ ボードに戻る</button></div>
-    <p class="lead">進行役の方向けの画面です。意見ごとに結論を入力すると、議事録の文章ができあがります。入力は自動で保存されます。</p>
+    <p class="lead">進行役の方向けの画面です。意見・質問・要望ごとに結論や回答を入力すると、議事録の文章ができあがります。入力は自動で保存されます。</p>
 
     <div class="panel">
       <h2>会議の情報</h2>
@@ -242,7 +242,7 @@ textarea.field{resize:vertical;min-height:44px}
       </div>
     </div>
 
-    <div class="panel"><h2>意見ごとの結論</h2><div class="rev" id="review"></div></div>
+    <div class="panel"><h2>結論・回答</h2><div class="rev" id="review"></div></div>
 
     <div class="panel">
       <h2>連絡事項・備考</h2>
@@ -293,7 +293,7 @@ textarea.field{resize:vertical;min-height:44px}
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grab"></div>
   <div id="writeForm">
-    <div class="sheet-head"><h2 id="sheetTitle">意見を書く</h2><button class="close" data-close aria-label="閉じる">×</button></div>
+    <div class="sheet-head"><h2 id="sheetTitle">意見・質問・要望を書く</h2><button class="close" data-close aria-label="閉じる">×</button></div>
 
     <div class="blk">
       <div class="q">あなたの名前</div>
@@ -314,7 +314,7 @@ textarea.field{resize:vertical;min-height:44px}
 
     <div class="blk">
       <div class="q">内容</div>
-      <textarea class="main" id="body" maxlength="2000" aria-label="意見の内容" placeholder="例：〜してもらえると助かります"></textarea>
+      <textarea class="main" id="body" maxlength="2000" aria-label="内容" placeholder="例：〜してもらえると助かります"></textarea>
     </div>
 
     <button class="send" id="send" disabled>名前を選んでください</button>
@@ -415,7 +415,7 @@ textarea.field{resize:vertical;min-height:44px}
 
   function render() {
     $("monthLabel").textContent = monthText(month);
-    $("inviteTitle").innerHTML = `${monthShort(month)}の京町亭会議で<br>話したいこと、<br>気軽に書いてください`;
+    $("inviteTitle").innerHTML = `${monthShort(month)}の京町亭会議への<br>意見・質問・要望を、<br>気軽に書いてください`;
     document.title = `京町亭会議ボード ${monthText(month)}`;
     syncWrite();
     if (isTyping()) { deferred = true; renderMinutesText(); return; }
@@ -431,7 +431,7 @@ textarea.field{resize:vertical;min-height:44px}
     const open = $("feedArea").hidden;
     $("feedArea").hidden = !open;
     $("toggleFeed").setAttribute("aria-expanded", String(open));
-    $("toggleLabel").textContent = open ? "意見を閉じる" : "みんなの意見を見る";
+    $("toggleLabel").textContent = open ? "閉じる" : "みんなの意見・質問・要望を見る";
   });
   function renderFilters() {
     $("feedCount").textContent = `${items.length}件`;
@@ -450,14 +450,14 @@ textarea.field{resize:vertical;min-height:44px}
     }
     return `<li class="card" data-id="${it.id}">
       <div class="body">${esc(it.body)}</div>
-      ${it.result || it.status !== "open" ? `<div class="result">${it.status !== "open" ? `<span class="chip-st">${STATUS[it.status]}</span> ` : ""}${it.result ? `<b>結論</b>${esc(it.result)}` : ""}</div>` : ""}
+      ${it.result || it.status !== "open" ? `<div class="result">${it.status !== "open" ? `<span class="chip-st">${STATUS[it.status]}</span> ` : ""}${it.result ? `<b>結論・回答</b>${esc(it.result)}` : ""}</div>` : ""}
       <div class="foot">
         <span>${esc(it.author || "名前なし")}・${fmtTime(it.created_at)}</span>
         ${mine ? `<span class="mine"><button class="txtbtn" data-act="edit">編集</button><button class="txtbtn warn" data-act="del">削除</button></span>` : ""}
       </div></li>`;
   }
   function renderFeed() {
-    if (!items.length) { $("feed").innerHTML = `<div class="empty">${monthShort(month)}の意見はまだありません。<br>最初のひとことを書いてみませんか？</div>`; return; }
+    if (!items.length) { $("feed").innerHTML = `<div class="empty">${monthShort(month)}の意見・質問・要望はまだありません。<br>最初のひとことを書いてみませんか？</div>`; return; }
     const g = destGroups().filter(x => filter === "all" ? x.rows.length : x.key === filter);
     $("feed").innerHTML = g.map(x => `<section class="sec"><h3>${esc(x.name)}${x.key === "other" ? "" : "へ"} <small>${x.rows.length}件</small></h3>
       ${x.rows.length ? `<ul class="cards">${x.rows.map(cardHTML).join("")}</ul>` : `<div class="empty">まだありません</div>`}</section>`).join("");
@@ -595,14 +595,14 @@ textarea.field{resize:vertical;min-height:44px}
     return list.slice().sort((a, b) => idx(a.department_id) - idx(b.department_id) || a.created_at.localeCompare(b.created_at));
   }
   function renderReview() {
-    if (!items.length) { $("review").innerHTML = `<div class="saved">${monthText(month)}の意見はまだありません。</div>`; return; }
+    if (!items.length) { $("review").innerHTML = `<div class="saved">${monthText(month)}の意見・質問・要望はまだありません。</div>`; return; }
     $("review").innerHTML = destGroups().filter(g => g.rows.length).map(g => {
       return `<h3>${esc(g.name)}${g.key === "other" ? "" : "へ"}</h3>` + g.rows.map(it => `
         <div class="rev-item" data-id="${it.id}">
           <div class="q"><small>${esc(it.author || "")}</small> ${esc(it.body)}</div>
           <div class="rev-ctl">
             <select data-f="status" aria-label="状況">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${it.status === k ? "selected" : ""}>${v}</option>`).join("")}</select>
-            <textarea class="field" data-f="result" maxlength="2000" placeholder="会議での結論・対応（誰が・いつまでに）" aria-label="結論">${esc(it.result || "")}</textarea>
+            <textarea class="field" data-f="result" maxlength="2000" placeholder="会議での結論・回答・対応（誰が・いつまでに）" aria-label="結論・回答">${esc(it.result || "")}</textarea>
           </div></div>`).join("");
     }).join("");
   }
