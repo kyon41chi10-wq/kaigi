@@ -57,6 +57,12 @@ button{cursor:pointer}
 .bigwrite svg{width:22px;height:22px}
 
 /* Filters */
+.showall{width:100%;margin-top:14px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;font-weight:700;color:var(--fg);text-align:left}
+.showall #toggleLabel{flex:1}
+.showall .n{font-weight:400;color:var(--muted);font-size:.88rem;font-variant-numeric:tabular-nums}
+.showall .chev{color:var(--muted);transition:transform .2s}
+.showall[aria-expanded="true"] .chev{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.showall .chev{transition:none}}
 .filters{display:flex;gap:6px;overflow-x:auto;padding-block:16px 6px;scrollbar-width:none}
 .filters button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:.9rem;color:var(--muted);white-space:nowrap}
 .filters button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
@@ -193,8 +199,11 @@ textarea.field{resize:vertical;min-height:44px}
       <button class="bigwrite" id="openWrite"><svg><use href="#i-pen"/></svg>意見を書く</button>
     </section>
 
-    <nav class="filters" id="filters" aria-label="宛先で絞り込み"></nav>
-    <div class="feed" id="feed"></div>
+    <button class="showall" id="toggleFeed" aria-expanded="false" aria-controls="feedArea"><span id="toggleLabel">みんなの意見を見る</span><span class="n" id="feedCount">0件</span><span class="chev" aria-hidden="true">▾</span></button>
+    <div id="feedArea" hidden>
+      <nav class="filters" id="filters" aria-label="宛先で絞り込み"></nav>
+      <div class="feed" id="feed"></div>
+    </div>
 
     <footer class="pagefoot">
       <button class="corner" id="toMinutes">議事録・設定</button>
@@ -327,6 +336,7 @@ textarea.field{resize:vertical;min-height:44px}
 <script>
 (() => {
   if (!window.supabase) {
+    document.getElementById("feedArea").hidden = false;
     document.getElementById("feed").innerHTML = '<div class="empty">データに接続できませんでした。<br>電波の良い場所で開き直してください。<br>ファイルを直接開いている場合は、公開したURLから開いてください。</div>';
     ["openWrite", "fab"].forEach(id => { const b = document.getElementById(id); if (b) b.disabled = true; });
     return;
@@ -417,7 +427,14 @@ textarea.field{resize:vertical;min-height:44px}
     g.push({ key: "other", name: "その他", rows: items.filter(i => i.section === "other" || !depts.some(d => d.id === i.department_id)) });
     return g;
   }
+  $("toggleFeed").addEventListener("click", () => {
+    const open = $("feedArea").hidden;
+    $("feedArea").hidden = !open;
+    $("toggleFeed").setAttribute("aria-expanded", String(open));
+    $("toggleLabel").textContent = open ? "意見を閉じる" : "みんなの意見を見る";
+  });
   function renderFilters() {
+    $("feedCount").textContent = `${items.length}件`;
     const g = destGroups();
     $("filters").innerHTML = `<button data-f="all" aria-pressed="${filter === "all"}">すべて<span class="n">${items.length}</span></button>` +
       g.map(x => `<button data-f="${x.key}" aria-pressed="${filter === x.key}">${esc(x.name)}<span class="n">${x.rows.length}</span></button>`).join("");
