@@ -88,6 +88,24 @@ button{cursor:pointer}
 .foot .mine{margin-left:auto;display:flex;gap:4px}
 .txtbtn{border:0;background:none;color:var(--muted);font-size:.82rem;padding:4px 6px;border-radius:6px;text-decoration:underline;text-underline-offset:2px}
 .txtbtn.warn{color:var(--danger)}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:.75rem;font-weight:700;border-radius:999px;padding:1px 10px}
+.b-answered{background:var(--accent-soft);color:var(--accent)}
+.b-agenda{background:var(--topic-bg);color:var(--topic)}
+.card .reply{font-size:.92rem;background:var(--accent-soft);border-radius:10px;padding:8px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.card .reply b{display:block;font-size:.75rem;color:var(--accent);margin-bottom:2px}
+.ttabs{display:flex;gap:6px;flex-wrap:wrap}
+.ttabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px;font-size:.88rem;color:var(--muted)}
+.ttabs button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.titem{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
+.titem .q{white-space:pre-wrap;overflow-wrap:anywhere}
+.titem .q small{display:block;color:var(--muted);font-size:.8rem}
+.titem .reply{font-size:.9rem;background:var(--accent-soft);border-radius:8px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.titem .reply b{display:block;font-size:.75rem;color:var(--accent)}
+.tact{display:flex;gap:8px;flex-wrap:wrap}
+.tact button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:700;font-size:.9rem;color:var(--fg)}
+.tact button.on{background:var(--topic-bg);color:var(--topic);border-color:transparent}
+.tact button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
 .chip-st{font-size:.72rem;font-weight:700;border-radius:4px;padding:1px 7px;background:var(--surface);color:var(--fg)}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted);font-size:.92rem}
 .edit textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);resize:vertical}
@@ -247,14 +265,6 @@ textarea.field{resize:vertical;min-height:44px}
     <p class="lead">進行役の方向けの画面です。意見・質問・要望ごとに結論や回答を入力すると、議事録の文章ができあがります。入力は自動で保存されます。</p>
 
     <div class="panel">
-      <h2>会議の情報</h2>
-      <div class="grid2">
-        <label class="fld"><span>開催日</span><input type="date" class="field" id="heldOn"></label>
-        <label class="fld"><span>出席者</span><textarea class="field" id="attendees" maxlength="1000" placeholder="例：施設長、各責任者…"></textarea></label>
-      </div>
-    </div>
-
-    <div class="panel">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
         <h2 style="display:flex;align-items:center;gap:6px"><svg width="18" height="18"><use href="#i-lock"/></svg>管理者あてのメッセージ</h2>
         <button class="small" id="reloadAdm">更新</button>
@@ -263,7 +273,22 @@ textarea.field{resize:vertical;min-height:44px}
       <div class="list" id="admList"><div class="saved">読み込み中…</div></div>
     </div>
 
-    <div class="panel"><h2>結論・回答</h2><div class="rev" id="review"></div></div>
+    <div class="panel">
+      <h2>届いた意見・質問・要望の仕分け</h2>
+      <p class="lead" style="margin:0">返信を付けると「回答済み」としてボードに表示されます。会議で話し合うものは「議事へ回す」を押してください。</p>
+      <div class="ttabs" id="ttabs"></div>
+      <div class="list" id="triage"></div>
+    </div>
+
+    <div class="panel">
+      <h2>会議の情報</h2>
+      <div class="grid2">
+        <label class="fld"><span>開催日</span><input type="date" class="field" id="heldOn"></label>
+        <label class="fld"><span>出席者</span><textarea class="field" id="attendees" maxlength="1000" placeholder="例：施設長、各責任者…"></textarea></label>
+      </div>
+    </div>
+
+    <div class="panel"><h2>議事の結論</h2><p class="lead" style="margin:0">「議事へ回す」にしたものが並びます。会議で決まったことを書いてください。</p><div class="rev" id="review"></div></div>
 
     <div class="panel">
       <h2>連絡事項・備考</h2>
@@ -441,7 +466,7 @@ textarea.field{resize:vertical;min-height:44px}
     document.title = `京町亭会議ボード ${monthText(month)}`;
     syncWrite();
     if (isTyping()) { deferred = true; renderMinutesText(); return; }
-    renderFilters(); renderFeed(); renderReview(); renderMinutesFields(); renderSettings(); renderMinutesText();
+    renderFilters(); renderFeed(); renderTriage(); renderReview(); renderMinutesFields(); renderSettings(); renderMinutesText();
   }
 
   function destGroups() {
@@ -470,9 +495,12 @@ textarea.field{resize:vertical;min-height:44px}
         <textarea id="edit-${it.id}" maxlength="2000">${esc(it.body)}</textarea>
         <div class="foot"><span class="mine"><button class="txtbtn" data-act="cancel">やめる</button><button class="btn2 primary" data-act="save">保存</button></span></div></li>`;
     }
+    const badges = (it.reply ? `<span class="badge b-answered">回答済み</span>` : "") + (it.agenda ? `<span class="badge b-agenda">会議で話し合います</span>` : "");
     return `<li class="card" data-id="${it.id}">
+      ${badges ? `<div class="badges">${badges}</div>` : ""}
       <div class="body">${esc(it.body)}</div>
-      ${it.result || it.status !== "open" ? `<div class="result">${it.status !== "open" ? `<span class="chip-st">${STATUS[it.status]}</span> ` : ""}${it.result ? `<b>結論・回答</b>${esc(it.result)}` : ""}</div>` : ""}
+      ${it.reply ? `<div class="reply"><b>管理者より</b>${esc(it.reply)}</div>` : ""}
+      ${it.agenda && (it.result || it.status !== "open") ? `<div class="result">${it.status !== "open" ? `<span class="chip-st">${STATUS[it.status]}</span> ` : ""}${it.result ? `<b>会議の結論</b>${esc(it.result)}` : ""}</div>` : ""}
       <div class="foot">
         <span>${esc(it.author || "名前なし")}・${fmtTime(it.created_at)}</span>
         ${mine ? `<span class="mine"><button class="txtbtn" data-act="edit">編集</button><button class="txtbtn warn" data-act="del">削除</button></span>` : ""}
@@ -652,9 +680,50 @@ textarea.field{resize:vertical;min-height:44px}
     const idx = id => { const k = depts.findIndex(d => d.id === id); return k < 0 ? 999 : k; };
     return list.slice().sort((a, b) => idx(a.department_id) - idx(b.department_id) || a.created_at.localeCompare(b.created_at));
   }
+  let ttab = "todo", replyingId = null;
+  const TT = { todo: ["未対応", it => !it.reply && !it.agenda], answered: ["回答済み", it => !!it.reply], agenda: ["議事へ", it => it.agenda], all: ["すべて", () => true] };
+  function renderTriage() {
+    $("ttabs").innerHTML = Object.entries(TT).map(([k, [label, fn]]) => `<button data-t="${k}" aria-pressed="${ttab === k}">${label} ${items.filter(fn).length}</button>`).join("");
+    const list = destGroups().flatMap(g => g.rows).filter(TT[ttab][1]);
+    if (!list.length) { $("triage").innerHTML = `<div class="saved">${ttab === "todo" ? "未対応のものはありません。" : "該当するものはありません。"}</div>`; return; }
+    $("triage").innerHTML = list.map(it => `
+      <div class="titem" data-id="${it.id}">
+        <div class="q"><small>【${esc(destLabel(it))}】${esc(it.author || "名前なし")}・${fmtTime(it.created_at)}</small>${esc(it.body)}</div>
+        ${replyingId === it.id ? `
+          <textarea class="field" id="reply-${it.id}" maxlength="2000" style="min-height:80px" placeholder="返信を書く（ボードに表示されます）">${esc(it.reply || "")}</textarea>
+          <div class="tact"><button class="primary" data-act="sendReply">${it.reply ? "返信を直す" : "返信して回答済みにする"}</button><button data-act="cancelReply">やめる</button>${it.reply ? `<button data-act="removeReply">返信を消す</button>` : ""}</div>`
+        : `${it.reply ? `<div class="reply"><b>返信済み</b>${esc(it.reply)}</div>` : ""}
+          <div class="tact"><button data-act="reply">${it.reply ? "返信を直す" : "返信する"}</button><button data-act="agenda" class="${it.agenda ? "on" : ""}">${it.agenda ? "議事へ回し済み（外す）" : "議事へ回す"}</button></div>`}
+      </div>`).join("");
+  }
+  $("ttabs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; ttab = b.dataset.t; replyingId = null; renderTriage(); });
+  async function adminPatch(id, patch) {
+    const { data, error } = await sb.rpc("meeting_admin_update_item", { p_password: adminPw, p_id: id, p_patch: patch });
+    if (error) { toast("保存できませんでした"); if (/unauthorized/.test(error.message || "")) lockAgain(); return false; }
+    const i = items.findIndex(x => x.id === id); if (i >= 0 && data) items[i] = data;
+    return true;
+  }
+  $("triage").addEventListener("click", async e => {
+    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const id = b.closest(".titem").dataset.id, act = b.dataset.act, it = items.find(x => x.id === id);
+    if (act === "reply") { replyingId = id; renderTriage(); $("reply-" + id)?.focus(); return; }
+    if (act === "cancelReply") { replyingId = null; renderTriage(); return; }
+    b.disabled = true;
+    if (act === "sendReply") {
+      const text = $("reply-" + id).value.trim(); if (!text) { b.disabled = false; return toast("返信を書いてください"); }
+      if (await adminPatch(id, { reply: text })) { replyingId = null; toast("返信しました（回答済み）"); }
+    } else if (act === "removeReply") {
+      if (await adminPatch(id, { reply: "" })) { replyingId = null; toast("返信を消しました"); }
+    } else if (act === "agenda") {
+      if (await adminPatch(id, { agenda: !it.agenda })) toast(it.agenda ? "議事から外しました" : "議事へ回しました");
+    }
+    renderTriage(); renderReview(); renderMinutesText(); renderFeed();
+  });
+
   function renderReview() {
-    if (!items.length) { $("review").innerHTML = `<div class="saved">${monthText(month)}の意見・質問・要望はまだありません。</div>`; return; }
-    $("review").innerHTML = destGroups().filter(g => g.rows.length).map(g => {
+    const ag = destGroups().map(g => ({ ...g, rows: g.rows.filter(it => it.agenda) })).filter(g => g.rows.length);
+    if (!ag.length) { $("review").innerHTML = `<div class="saved">まだ議事へ回したものはありません。</div>`; return; }
+    $("review").innerHTML = ag.map(g => {
       return `<h3>${esc(g.name)}${g.key === "other" ? "" : "へ"}</h3>` + g.rows.map(it => `
         <div class="rev-item" data-id="${it.id}">
           <div class="q"><small>${esc(it.author || "")}</small> ${esc(it.body)}</div>
@@ -673,18 +742,24 @@ textarea.field{resize:vertical;min-height:44px}
     const h = $("heldOn").value;
     if (h) { const d = new Date(h + "T00:00"); L.push(`開催日：${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日（${"日月火水木金土"[d.getDay()]}）`); } else L.push("開催日：");
     L.push(`出席者：${$("attendees").value.trim()}`, "");
-    let n = 0;
-    destGroups().forEach(g => {
-      L.push(`■${++n}．${g.name}${g.key === "other" ? "" : "について"}`);
-      if (!g.rows.length) { L.push("　特になし", ""); return; }
-      g.rows.forEach(it => {
-        L.push(`・${it.body.replace(/\n/g, "\n　")}${it.author ? `（${it.author}）` : ""}`);
-        const st = it.status !== "open" ? `［${STATUS[it.status]}］` : "";
-        if (it.result || st) L.push(`　→ ${st}${(it.result || "").replace(/\n/g, "\n　　")}`);
-      });
-      L.push("");
+    const nl = (t, ind) => t.replace(/\n/g, "\n" + ind);
+    const block = (filter, line) => {
+      const gs = destGroups().map(g => ({ ...g, rows: g.rows.filter(filter) })).filter(g => g.rows.length);
+      if (!gs.length) { L.push("　特になし"); return; }
+      gs.forEach(g => { L.push(`【${g.name}${g.key === "other" ? "" : "へ"}】`); g.rows.forEach(line); });
+    };
+    L.push("■1．議題");
+    block(it => it.agenda, it => {
+      L.push(`・${nl(it.body, "　")}${it.author ? `（${it.author}）` : ""}`);
+      const st = it.status !== "open" ? `［${STATUS[it.status]}］` : "";
+      if (it.result || st) L.push(`　→ ${st}${nl(it.result || "", "　　")}`);
     });
-    L.push(`■${++n}．連絡事項・備考`, $("notes").value.trim() || "　特になし");
+    L.push("", "■2．会議前に回答済みのもの");
+    block(it => !!it.reply && !it.agenda, it => {
+      L.push(`・${nl(it.body, "　")}${it.author ? `（${it.author}）` : ""}`);
+      L.push(`　→ 回答：${nl(it.reply, "　　")}`);
+    });
+    L.push("", "■3．連絡事項・備考", $("notes").value.trim() || "　特になし");
     return L.join("\n");
   }
   function renderMinutesText() { $("minutesOut").textContent = buildMinutesText(); }
@@ -697,8 +772,9 @@ textarea.field{resize:vertical;min-height:44px}
     const it = items.find(i => i.id === id); if (it) it[f] = val;
     renderMinutesText();
     debounce(id + f, async () => {
-      const { error } = await sb.from("meeting_items").update({ [f]: val }).eq("id", id);
+      const { error } = await sb.rpc("meeting_admin_update_item", { p_password: adminPw, p_id: id, p_patch: { [f]: val ?? "" } });
       $("savedMinutes").textContent = error ? "保存できませんでした" : "保存しました";
+      if (error && /unauthorized/.test(error.message || "")) lockAgain();
     }, f === "status" ? 0 : 700);
   });
   ["heldOn", "attendees", "notes"].forEach(id => $(id).addEventListener("input", () => {
